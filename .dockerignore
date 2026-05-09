@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+.git
+.gitignore
+*.log
+secrets
+config/hosts.yaml
+README.md

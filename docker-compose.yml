@@ -1,0 +1,18 @@
+services:
+  ssh-mcp-server:
+    build: .
+    image: ssh-mcp-server:latest
+    container_name: ssh-mcp-server
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      BIND: "0.0.0.0"
+      CONFIG_PATH: /config/hosts.yaml
+      AUDIT_LOG_PATH: /data/audit.log
+      MCP_AUTH_TOKEN: ${MCP_AUTH_TOKEN}
+    volumes:
+      - ./config:/config:ro
+      - ./secrets:/secrets:ro
+      - ./data:/data

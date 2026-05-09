@@ -1,0 +1,61 @@
+# Inventory for ssh-mcp-server.
+# Mounted into the container at /config/hosts.yaml (read-only).
+#
+# - The global blacklist below is MERGED with the built-in catastrophic-action
+#   blacklist. You cannot weaken the built-ins; you can only add to them.
+# - Each host has a 'mode': 'trusted' (no whitelist gate; blacklist still
+#   applies) or 'restricted' (must match a per-host whitelist regex).
+# - In 'restricted' mode, 'whitelist' must be non-empty or the server refuses
+#   to start.
+
+defaults:
+  user: claude-ops
+  port: 22
+  privateKeyPath: /secrets/id_ed25519
+  timeoutMs: 30000
+  blacklist:
+    # Optional extra blacklist patterns layered on top of the built-ins.
+    - "/etc/(passwd|shadow|sudoers)"
+
+hosts:
+  # Example 1: trusted mode. Full operational power; the LLM client is
+  # treated as a trusted operator. Catastrophic-action blacklist still
+  # applies as a safety net.
+  - name: web-server
+    address: 10.0.0.10
+    user: ops
+    mode: trusted
+    description: |
+      Production web tier. Runs nginx + node.
+      Full operational access for deploys, log triage, etc.
+
+  # Example 2: restricted mode. Read-only diagnostic access only.
+  - name: jump-host
+    address: 10.0.0.5
+    mode: restricted
+    description: |
+      VLAN jump host. Read-only diagnostics only.
+    whitelist:
+      - "^ls( |$)"
+      - "^pwd$"
+      - "^whoami$"
+      - "^uptime$"
+      - "^df( |$)"
+      - "^free( |$)"
+      - "^cat\\s+/var/log/"
+      - "^tail(\\s+-[a-zA-Z0-9]+)*\\s+/var/log/"
+      - "^journalctl\\b"
+      - "^systemctl\\s+(status|list-units|is-active)\\b"
+      - "^docker\\s+(ps|images|logs|stats|inspect)\\b"
+
+  # Example 3: restricted with custom user and timeout
+  # - name: db-server
+  #   address: 10.0.0.20
+  #   user: dba-readonly
+  #   port: 2222
+  #   timeoutMs: 60000
+  #   mode: restricted
+  #   description: Postgres primary. Read-only DBA access.
+  #   whitelist:
+  #     - "^psql\\s+-c\\s+\"SELECT\\b"
+  #     - "^pg_isready\\b"

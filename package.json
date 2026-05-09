@@ -1,0 +1,48 @@
+{
+  "name": "ssh-mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server exposing scoped, audited SSH access to remote hosts via Streamable HTTP.",
+  "type": "module",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "author": "Dave Scharf",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scharf-black/ssh-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/scharf-black/ssh-mcp-server/issues"
+  },
+  "homepage": "https://github.com/scharf-black/ssh-mcp-server",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ssh",
+    "claude",
+    "llm",
+    "agent"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "express": "^4.21.2",
+    "ssh2": "^1.16.0",
+    "yaml": "^2.6.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.5",
+    "@types/ssh2": "^1.15.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
