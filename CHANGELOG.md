@@ -1,21 +1,24 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+## 0.2.0 — 2026-07-11
+Reconciled the repo with what was actually running in production. The deployed image and
+this repo had drifted **in both directions**; 4 of 5 compiled modules (`types`, `audit`,
+`config`, `ssh`) were byte-identical, and only `index` differed.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+- **FIX (regression): `ssh_exec` command limit 2000 -> 32000 chars.** The repo capped
+  commands at 2000; the deployed image used 32000. Real agent commands (multi-line
+  scripts, heredocs, inline python) routinely exceed 2k, so building from the repo as-is
+  would have started rejecting normal work. 32000 is now the source of truth.
+- **KEPT from the repo (absent in the deployed image):** `mode` (`trusted` | `restricted`)
+  is surfaced in `ssh_list_hosts` output, and the tool descriptions accurately document
+  trusted vs restricted semantics (trusted skips the whitelist gate; the catastrophic
+  blacklist always applies).
+- Server identifies as `ssh-mcp-server` (the deployed image self-identified as
+  `homelab-ssh-mcp-server`; cosmetic only).
 
-## [0.1.0] - 2026-05-09
+Provenance note: the deployed image was built ad-hoc on unraid and its build context was
+never persisted, so the repo had silently stopped matching production. Rebuild from THIS
+repo from now on.
 
-### Added
-
-- Initial release.
-- Two MCP tools: `ssh_list_hosts`, `ssh_exec`.
-- Streamable HTTP transport with bearer-token auth.
-- Per-host modes: `trusted` (blacklist only) and `restricted` (whitelist + blacklist).
-- Built-in catastrophic-action blacklist (rm -rf /, mkfs on real devices, dd to real devices, redirects to real devices, shred, fork bombs).
-- 256 KB output truncation per stream.
-- Configurable per-host SSH timeout (default 30s).
-- JSON-line audit log (`exec_request`, `exec_blocked`, `exec_completed`, `exec_failed`, `auth_failed`, `list_hosts`).
-- Multi-stage Dockerfile, non-root container user, healthcheck.
-- `setup-target-host.sh` script for provisioning targets with hardened `authorized_keys` (`from=` IP pin, `no-port-forwarding`, `no-agent-forwarding`, `no-X11-forwarding`, `no-user-rc`, `no-pty`).
+## 0.1.0 — 2026-05-09
+Initial commit.

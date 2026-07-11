@@ -97,7 +97,7 @@ Returns:
     command: z
       .string()
       .min(1)
-      .max(2000)
+      .max(32000)   // NOT 2000: real agent commands (multi-line scripts, heredocs) routinely exceed 2k. The deployed image already used 32000; the repo had regressed to 2000.
       .describe(
         "Shell command to execute on the host. In restricted mode, must match the host's whitelist; in trusted mode, anything goes except patterns matching the global catastrophic-action blacklist. Run on a non-interactive PTY-less shell.",
       ),
